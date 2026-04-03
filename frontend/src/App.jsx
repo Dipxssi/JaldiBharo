@@ -15,18 +15,20 @@ function App() {
   };
 
   const handleUpload = async () => {
-    if (files.length === 0) return alert("Please seelct images! ")
+    if (files.length === 0) return alert("Please select images!");
 
     setLoading(true);
-
     const formData = new FormData();
 
     for (let i = 0; i < files.length; i++) {
-      formData.append('files', files[i])
-
+      formData.append('files', files[i]);
     }
+
     try {
-      const response = await fetch('http://127.0.0.1:8000/upload', {
+      
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+      
+      const response = await fetch(`${apiUrl}/upload`, {
         method: 'POST',
         body: formData
       });
@@ -38,13 +40,12 @@ function App() {
       const data = await response.json();
       setResult(data);
     } catch (error) {
-      console.error("Upload failed:", error)
-      alert("Something went wrong!")
+      console.error("Upload failed:", error);
+      alert("Something went wrong!");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-
-  }
+  };
 
   
 
