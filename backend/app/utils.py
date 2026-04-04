@@ -1,21 +1,40 @@
+import cloudinary
 import cloudinary.uploader
 import io
 from PIL import Image
-import os 
+import os
 from dotenv import load_dotenv
+from urllib.parse import unquote, urlparse
 
 load_dotenv()
 
-def upload_to_cloudinary(file_bytes: bytes):
-  result = cloudinary.uploader.upload(io.BytesIO(file_bytes))
-  return result["secure_url"]
+
+def _configure_cloudinary() -> None:
+    # Render has no .env; use dashboard env vars. CLOUDINARY_URL (from Cloudinary) overrides split vars.
+    url = os.getenv("CLOUDINARY_URL")
+    if url and url.strip():
+        parsed = urlparse(url.strip())
+        if parsed.scheme != "cloudinary":
+            raise ValueError("CLOUDINARY_URL must start with cloudinary://")
+        cloudinary.config(
+            cloud_name=parsed.hostname,
+            api_key=unquote(parsed.username) if parsed.username else None,
+            api_secret=unquote(parsed.password) if parsed.password else None,
+        )
+        return
+    cloudinary.config(
+        cloud_name=(os.getenv("CLOUDINARY_CLOUD_NAME") or "").strip() or None,
+        api_key=(os.getenv("CLOUDINARY_API_KEY") or "").strip() or None,
+        api_secret=(os.getenv("CLOUDINARY_API_SECRET") or "").strip() or None,
+    )
 
 
-cloudinary.config(
-  cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-  api_key=os.getenv("CLOUDINARY_API_KEY"),
-  api_secret=os.getenv("CLOUDINARY_API_SECRET")
-)
+_configure_cloudinary()
+
+
+def upload_to_cloudinary(file_bytes: bytes) -> str:
+    result = cloudinary.uploader.upload(io.BytesIO(file_bytes))
+    return result["secure_url"]
 
 def create_collage(image_bytes_list: list[bytes]) -> bytes:
   images = [Image.open(io.BytesIO(b)) for b in image_bytes_list]
@@ -41,7 +60,5 @@ def create_collage(image_bytes_list: list[bytes]) -> bytes:
   collage.save(img_byte_arr , format='JPEG')
   return img_byte_arr.getvalue()
 
-def upload_to_cloudinary(file_bytes: bytes) -> str:
-  upload_result = cloudinary.uploader.upload(io.BytesIO(file_bytes))
-  return upload_result["secure_url"]
+
 
