@@ -10,7 +10,7 @@ load_dotenv()
 
 
 def _configure_cloudinary() -> None:
-    # Render has no .env; use dashboard env vars. CLOUDINARY_URL (from Cloudinary) overrides split vars.
+  
     url = os.getenv("CLOUDINARY_URL")
     if url and url.strip():
         parsed = urlparse(url.strip())
