@@ -1,3 +1,5 @@
+# manages appln based settings and env var
+
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict

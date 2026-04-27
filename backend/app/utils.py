@@ -1,3 +1,5 @@
+#Helper functions for img processing and cloud uploading.
+
 import cloudinary
 import cloudinary.uploader
 import io
@@ -29,8 +31,9 @@ def _configure_cloudinary() -> None:
     )
 
 
-_configure_cloudinary()
+_configure_cloudinary() #sets up cloudinary using credentials 
 
+# takes image data and uploads it to the internet , returns url
 
 def upload_to_cloudinary(file_bytes: bytes) -> str:
     result = cloudinary.uploader.upload(io.BytesIO(file_bytes))

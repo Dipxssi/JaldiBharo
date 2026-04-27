@@ -1,3 +1,5 @@
+#manages the databse connection and session creation using SQLModel 
+
 import os
 from sqlmodel import create_engine , SQLModel , Session
 
@@ -10,7 +12,7 @@ if DATABASE_URL.startswith("postgres://"):
 
 if not DATABASE_URL:
     DATABASE_URL = "sqlite:///./database.db"
-    print("⚠️ DATABASE_URL not set, falling back to SQLite")
+    print("DATABASE_URL not set, falling back to SQLite")
 
 engine = create_engine(DATABASE_URL, echo=True)
 
